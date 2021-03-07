@@ -24,15 +24,48 @@ def load_neos(neo_csv_path):
     :param neo_csv_path: A path to a CSV file containing data about near-Earth objects.
     :return: A collection of `NearEarthObject`s.
     """
-    # TODO: Load NEO data from the given CSV file.
-    return ()
+    if not neo_csv_path:
+        raise Exception('Path is empty, no filename provided!')
+
+    neos = set()
+    with open(neo_csv_path) as f:
+        # create reader
+        reader = csv.DictReader(f)
+        for row in reader:
+            neo_data = {
+                'designation': row['pdes'],
+                'name': row['name'],
+                'diameter': row['diameter'],
+                'hazardous': True if row['pha'] in ('Y', 'y') else False
+            }
+            neo = NearEarthObject(**neo_data)
+            if neo not in neos:
+                neos.add(neo)
+
+    return neos
 
 
 def load_approaches(cad_json_path):
     """Read close approach data from a JSON file.
 
-    :param neo_csv_path: A path to a JSON file containing data about close approaches.
+    :param cad_json_path: A path to a JSON file containing data about close approaches.
     :return: A collection of `CloseApproach`es.
     """
-    # TODO: Load close approach data from the given JSON file.
-    return ()
+    if not cad_json_path:
+        raise Exception('Path is empty, no filename provided!')
+
+    approaches = []
+    with open(cad_json_path) as f:
+        contents = json.load(f)
+    for data in contents['data']:
+        approach_data = {
+            'designation': data[0],
+            'time': data[3],
+            'distance': data[4],
+            'velocity': data[7]
+        }
+        approach = CloseApproach(**approach_data)
+        approaches.append(approach)
+
+    # return collections without duplicates
+    return list(set(approaches))
