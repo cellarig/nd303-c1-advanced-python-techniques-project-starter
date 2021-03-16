@@ -20,8 +20,8 @@ You'll edit this file in Task 1.
 from helpers import cd_to_datetime, datetime_to_str
 
 
-def is_empty_or_blank(content):
-    return bool(content and str(content).strip())
+def is_neither_empty_nor_blank(content):
+    return bool(content and not str(content).isspace())
 
 
 class NearEarthObject:
@@ -49,8 +49,8 @@ class NearEarthObject:
         # and a missing diameter being represented by `float('nan')`.
 
         self.designation = info['designation'] if info else ''
-        self.name = info['name'] if (info and 'name' in info and is_empty_or_blank(info['name'])) else None
-        self.diameter = float(info['diameter']) if (info and is_empty_or_blank(info['diameter'])) else float('nan')
+        self.name = info['name'] if (info and 'name' in info and is_neither_empty_nor_blank(info['name'])) else None
+        self.diameter = float(info['diameter']) if (info and is_neither_empty_nor_blank(info['diameter'])) else float('nan')
         self.hazardous = info['hazardous'] if (info and 'hazardous' in info) else False
 
         # Create an empty initial collection of linked approaches.
@@ -129,7 +129,7 @@ class CloseApproach:
         # The project instructions include one possibility. Peek at the __repr__
         # method for examples of advanced string formatting.
         return (f"On {self.time_str}, '{self.neo.fullname}' approaches Earth "
-                f"At a distance of {self.distance:.2f} au and a velocity of {self.velocity} km/s.")
+                f"At a distance of {self.distance:.2f} au and a velocity of {self.velocity:.2f} km/s.")
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""

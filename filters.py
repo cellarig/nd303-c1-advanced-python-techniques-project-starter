@@ -23,6 +23,10 @@ class UnsupportedCriterionError(NotImplementedError):
     """A filter criterion is unsupported."""
 
 
+class NoAttachedNEOError(NotImplementedError):
+    """No NEO is attached to the a CloseApproach."""
+
+
 class AttributeFilter:
     """A general superclass for filters on comparable attributes.
 
@@ -72,6 +76,67 @@ class AttributeFilter:
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
 
+class DateFilter(AttributeFilter):
+    """A subclass filter on date element of a close approach
+
+    A `DateFilter` represents the search criteria pattern comparing date
+    of a close approach (or its attached NEO) to a reference date.
+    """
+    @classmethod
+    def get(cls, approach):
+        return approach.time.date()
+
+
+class DistanceFilter(AttributeFilter):
+    """A subclass filter on km distance of a close approach
+
+    A `DistanceFilter` represents the search criteria pattern comparing distance
+    of a close approach (or its attached NEO) to a reference distance.
+    """
+    @classmethod
+    def get(cls, approach):
+        return approach.distance
+
+
+class VelocityFilter(AttributeFilter):
+    """A subclass filter on velocity of a close approach in km/s
+
+    A `VelocityFilter` represents the search criteria pattern comparing velocity
+    of a close approach (or its attached NEO) to a reference velocity.
+    """
+    @classmethod
+    def get(cls, approach):
+        return approach.velocity
+
+
+class DiameterFilter(AttributeFilter):
+    """A subclass filter on diameter of its attached NEO
+
+    A `DiameterFilter` represents the search criteria pattern comparing diameter
+    of its attached NEO to a reference diameter.
+    """
+    @classmethod
+    def get(cls, approach):
+        if approach.neo is not None:
+            return approach.neo.diameter
+        else:
+            raise NoAttachedNEOError
+
+
+class HazardousFilter(AttributeFilter):
+    """A subclass filter on hazardous potential of its attached NEO
+
+    A `HazardousFilter` represents the search criteria pattern comparing hazardous potential
+    of its attached NEO to a reference hazardous potential.
+    """
+    @classmethod
+    def get(cls, approach):
+        if approach.neo is not None:
+            return approach.neo.hazardous
+        else:
+            raise NoAttachedNEOError
+
+
 def create_filters(date=None, start_date=None, end_date=None,
                    distance_min=None, distance_max=None,
                    velocity_min=None, velocity_max=None,
@@ -82,7 +147,7 @@ def create_filters(date=None, start_date=None, end_date=None,
     Each of these arguments is provided by the main module with a value from the
     user's options at the command line. Each one corresponds to a different type
     of filter. For example, the `--date` option corresponds to the `date`
-    argument, and represents a filter that selects close approaches that occured
+    argument, and represents a filter that selects close approaches that occurred
     on exactly that given date. Similarly, the `--min-distance` option
     corresponds to the `distance_min` argument, and represents a filter that
     selects close approaches whose nominal approach distance is at least that
@@ -106,8 +171,28 @@ def create_filters(date=None, start_date=None, end_date=None,
     :param hazardous: Whether the NEO of a matching `CloseApproach` is potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    # TODO: Decide how you will represent your filters.
-    return ()
+    query_filters = []
+    if date is not None:
+        query_filters.append(DateFilter(operator.eq, date))
+    if start_date is not None:
+        query_filters.append(DateFilter(operator.ge, start_date))
+    if end_date is not None:
+        query_filters.append(DateFilter(operator.le, end_date))
+    if distance_min is not None:
+        query_filters.append(DistanceFilter(operator.ge, distance_min))
+    if distance_max is not None:
+        query_filters.append(DistanceFilter(operator.le, distance_max))
+    if velocity_min is not None:
+        query_filters.append(VelocityFilter(operator.ge, velocity_min))
+    if velocity_max is not None:
+        query_filters.append(VelocityFilter(operator.le, velocity_max))
+    if diameter_min is not None:
+        query_filters.append(DiameterFilter(operator.ge, diameter_min))
+    if diameter_max is not None:
+        query_filters.append(DiameterFilter(operator.le, diameter_max))
+    if hazardous is not None:
+        query_filters.append(HazardousFilter(operator.eq, hazardous))
+    return tuple(query_filters)
 
 
 def limit(iterator, n=None):
@@ -119,5 +204,8 @@ def limit(iterator, n=None):
     :param n: The maximum number of values to produce.
     :yield: The first (at most) `n` values from the iterator.
     """
-    # TODO: Produce at most `n` values from the given iterator.
-    return iterator
+    # Produce at most `n` values from the given iterator.
+    for i, value in enumerate(iterator):
+        yield value
+        if i + 1 == n:
+            return
