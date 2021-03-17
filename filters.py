@@ -13,7 +13,6 @@ the supplied `CloseApproach`.
 
 The `limit` function simply limits the maximum number of values produced by an
 iterator.
-
 """
 import operator
 
