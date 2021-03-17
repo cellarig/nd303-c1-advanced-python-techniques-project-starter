@@ -15,7 +15,6 @@ The functions that construct these objects use information extracted from the
 data files from NASA, so these objects should be able to handle all of the
 quirks of the data set, such as missing names and unknown diameters.
 
-You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
 
@@ -50,7 +49,7 @@ class NearEarthObject:
 
         self.designation = info['designation'] if info else ''
         self.name = info['name'] if (info and 'name' in info and is_neither_empty_nor_blank(info['name'])) else None
-        self.diameter = float(info['diameter']) if (info and is_neither_empty_nor_blank(info['diameter'])) else float('nan')
+        self.diameter = float(info['diameter'] if (info and is_neither_empty_nor_blank(info['diameter'])) else 'nan')
         self.hazardous = info['hazardous'] if (info and 'hazardous' in info) else False
 
         # Create an empty initial collection of linked approaches.
@@ -75,6 +74,12 @@ class NearEarthObject:
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
                 f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
+
+    def serialize(self):
+        return {'designation': self.designation,
+                'name': self.name if self.name is not None else '',
+                'diameter_km': round(self.diameter, 2),
+                'potentially_hazardous': self.hazardous}
 
 
 class CloseApproach:
@@ -135,3 +140,9 @@ class CloseApproach:
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
                 f"velocity={self.velocity:.2f}, neo={self.neo!r})")
+
+    def serialize(self):
+        return {'datetime_utc': self.time_str,
+                'distance_au': self.distance,
+                'velocity_km_s': self.velocity,
+                'designation': self._designation}
