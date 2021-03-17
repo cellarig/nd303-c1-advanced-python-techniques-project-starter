@@ -41,7 +41,8 @@ class NEODatabase:
         """
         self._neos = neos
         self._approaches = approaches
-        self._neos_by_designation = {neo.designation: neo for neo in self._neos}
+        self._neos_by_designation = {neo.designation: neo
+                                     for neo in self._neos}
         self._neos_by_name = {neo.name: neo for neo in self._neos}
 
         for approach in self._approaches:

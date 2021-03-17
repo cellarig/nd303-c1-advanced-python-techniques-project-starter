@@ -89,8 +89,8 @@ class DateFilter(AttributeFilter):
 class DistanceFilter(AttributeFilter):
     """A subclass filter on km distance of a close approach
 
-    A `DistanceFilter` represents the search criteria pattern comparing distance
-    of a close approach (or its attached NEO) to a reference distance.
+    A `DistanceFilter` represents the search criteria pattern comparing
+    distance of a close approach (or its attached NEO) to a reference distance.
     """
     @classmethod
     def get(cls, approach):
@@ -100,8 +100,8 @@ class DistanceFilter(AttributeFilter):
 class VelocityFilter(AttributeFilter):
     """A subclass filter on velocity of a close approach in km/s
 
-    A `VelocityFilter` represents the search criteria pattern comparing velocity
-    of a close approach (or its attached NEO) to a reference velocity.
+    A `VelocityFilter` represents the search criteria pattern comparing
+    velocity of a close approach (or its attached NEO) to a reference velocity.
     """
     @classmethod
     def get(cls, approach):
@@ -111,8 +111,8 @@ class VelocityFilter(AttributeFilter):
 class DiameterFilter(AttributeFilter):
     """A subclass filter on diameter of its attached NEO
 
-    A `DiameterFilter` represents the search criteria pattern comparing diameter
-    of its attached NEO to a reference diameter.
+    A `DiameterFilter` represents the search criteria pattern comparing
+    diameter of its attached NEO to a reference diameter.
     """
     @classmethod
     def get(cls, approach):
@@ -125,8 +125,8 @@ class DiameterFilter(AttributeFilter):
 class HazardousFilter(AttributeFilter):
     """A subclass filter on hazardous potential of its attached NEO
 
-    A `HazardousFilter` represents the search criteria pattern comparing hazardous potential
-    of its attached NEO to a reference hazardous potential.
+    A `HazardousFilter` represents the search criteria pattern comparing
+    hazardous potential of its attached NEO to a reference hazardous potential.
     """
     @classmethod
     def get(cls, approach):
