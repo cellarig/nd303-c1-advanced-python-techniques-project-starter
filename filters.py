@@ -15,6 +15,7 @@ The `limit` function simply limits the maximum number of values produced by an
 iterator.
 """
 import operator
+import itertools
 
 
 class UnsupportedCriterionError(NotImplementedError):
@@ -203,7 +204,7 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
     # Produce at most `n` values from the given iterator.
-    for i, value in enumerate(iterator):
-        yield value
-        if i + 1 == n:
-            return
+    if n:
+        return itertools.islice(iterator, n)
+    else:
+        return itertools.islice(iterator, 0, None)

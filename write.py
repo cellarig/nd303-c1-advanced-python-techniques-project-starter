@@ -51,4 +51,4 @@ def write_to_json(results, filename):
         output.append(approach_data)
 
     with open(filename, 'w') as f:
-        json.dump(output, f, indent=2)
+        json.dump(output, f, sort_keys=True, indent=2)
